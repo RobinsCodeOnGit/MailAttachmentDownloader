@@ -24,7 +24,8 @@ public class Printer {
 			throw new IllegalArgumentException(
 					"The provided file: " + pdfFile.getName() + " was not a pdf and can therefore not be printed.");
 		}
-		ProcessBuilder pb = new ProcessBuilder("cmd", "/c", foxit.getAbsolutePath(), "/p", "/h", pdfFile.getAbsolutePath());
+		ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "\"" ,ensureQuotation(foxit.getAbsolutePath()), "/p", "/h",
+				ensureQuotation(pdfFile.getAbsolutePath()) , "\"");
 		String command = pb.command().stream().collect(Collectors.joining(" "));
 		pb.redirectErrorStream(true);
 		log.debug("Trying to print file: '" + pdfFile.getName() + "'.");
@@ -39,4 +40,16 @@ public class Printer {
 		in.close();
 	}
 
+	private static String ensureQuotation(String path) {
+		if (path == null || path.trim() == "") {
+			return path;
+		}
+		if (!path.startsWith("\"")) {
+			path = "\"" + path;
+		}
+		if (!path.endsWith("\"")) {
+			path += "\"";
+		}
+		return path;
+	}
 }

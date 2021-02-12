@@ -113,7 +113,7 @@ public class Main {
 		} finally {
 			receiver.close();
 		}
-		log.info("Process exists.");
+		log.info("Process exits.");
 	}
 
 }
