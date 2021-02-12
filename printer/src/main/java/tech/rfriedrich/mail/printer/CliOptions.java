@@ -64,7 +64,7 @@ public final class CliOptions {
 	}
 
 	public static String returnValueOfOptionOrDefault(CommandLine cmd, String opt, Properties props, String propertyKey,
-			boolean isNullAllowed, String defaultValue) throws ParseException {
+			boolean isNullAllowed, String defaultValue) throws ParseException, IllegalArgumentException {
 		String property = props.getProperty(propertyKey);
 		String returnValue = null;
 		if (cmd.hasOption(opt) && cmd.getOptionValue(opt) != null) {
@@ -74,6 +74,9 @@ public final class CliOptions {
 		} else if (isNullAllowed) {
 			returnValue = null;
 		} else {
+			if (defaultValue == null) {
+				throw new IllegalArgumentException(propertyKey + " cannot be null.");
+			}
 			returnValue = defaultValue;
 		}
 		String logValue = returnValue;
@@ -88,17 +91,21 @@ public final class CliOptions {
 			String propertyKey, Boolean defaultValue) throws ParseException {
 		String property = props.getProperty(propertyKey);
 		if (cmd.hasOption(opt)) {
+			log.debug("Option: '" + opt + "' was set to: true");
 			return true;
 		} else if (property != null) {
 			if (property.trim().equalsIgnoreCase("true")) {
+				log.debug("Option: '" + opt + "' was set to: true");
 				return true;
 			} else if (property.trim().equalsIgnoreCase("false")) {
+				log.debug("Option: '" + opt + "' was set to: false");
 				return false;
 			} else {
 				throw new ParseException(
 						"Couldn't parse the property " + propertyKey + "'s value: '" + property + "'.");
 			}
 		} else {
+			log.debug("Option: '" + opt + "' was set to: " + defaultValue.toString());
 			return defaultValue;
 		}
 

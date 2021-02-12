@@ -16,6 +16,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -200,9 +201,9 @@ public class EmailAttachmentReceiver {
 									|| "inline".equalsIgnoreCase(part.getDisposition())) {
 								log.info("Mail '" + message.getSubject() + "' has attachements.");
 								// this part is attachment
-								String fileName = part.getFileName();
+								String fileName = MimeUtility.decodeText(part.getFileName());
 								if (doesFilenameSuffixMatch(fileName, attachmentFileNameSuffix)) {
-									log.debug("Attachement: " + fileName + " ends with " + attachmentFileNameSuffix);
+									log.debug("Attachement: " + fileName + " ends with '" + attachmentFileNameSuffix + "'");
 									File attachment = new File(this.saveDirectory + File.separator + fileName);
 									part.saveFile(attachment);
 									log.info("Saved File: " + this.saveDirectory + File.separator + fileName);
@@ -214,6 +215,7 @@ public class EmailAttachmentReceiver {
 					}
 				}
 			}
+			folderInbox.expunge();
 			folderInbox.close(false);
 		} catch (MessagingException | IOException e) {
 			throw e;
